@@ -1,7 +1,7 @@
 [[update-doc]]
 === 更新整个文档
 
-在 Elasticsearch 中文档是不可改变的，我们不能使用((("documents", "updating whole document")))((("updating documents", "whole document")))的办法改变他们。相反，如果我们需要更新现有的文档，我们要重建索引或者进行替换。((("reindexing")))((("indexing", seealso="reindexing")))在这里我们使用的 `index` API 和我们已经讨论的<<index-doc>>中的相同.
+在 Elasticsearch 中文档是不可改变的，我们不能改变它们。((("documents", "updating whole document")))((("updating documents", "whole document"))) 相反，如果我们需要更新现有的文档，我们要重建索引或者进行替换。((("reindexing")))((("indexing", seealso="reindexing")))在这里我们使用相同的 `index` API ，该 API 我们在<<index-doc>>中已经进行了讨论。
 
 [source,js]
 --------------------------------------------------
@@ -37,6 +37,6 @@ PUT /website/blog/123
 3. 删除旧文档
 4. 索引一个新文档
 
-唯一的区别在于,  `update` API 仅仅通过一个客户端请求来实现这些步骤，而不是单独请求多次 `get` 和 `index` 请求。
+唯一的区别在于,  `update` API 仅仅通过一个客户端请求来实现这些步骤，而不需要单独的 `get` 和 `index` 请求。
  
 

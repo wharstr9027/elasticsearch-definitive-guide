@@ -1,11 +1,11 @@
 [[partial-updates]]
 === 更新部分文档
 
-在 <<update-doc>>中, 我们说 ((("updating documents", "partial updates")))((("documents", "partial updates")))更新一个文档的方法是检索并且改变它。然后重新索引整个文档，这是真的。然而，使用 `update` API 我们能更新部分文档，比如单个请求中的计数器增加。
+在 <<update-doc>>中, 我们说 ((("updating documents", "partial updates")))((("documents", "partial updates")))更新一个文档的方法是检索并且改变它，然后重新索引整个文档，这是真的。然而，使用 `update` API 我们能更新部分文档，比如单个请求中的计数器增加。
 
 我们还表示，文件是不可变的，他们不能被改变，只能被替换。该 `update` API 一定要遵守同样的规则。对外，它看起来好像我们部分更新一个文档。然而在内部，该 `update` API 像我们描述的一样简单地管理_检索-改变-重建索引_的处理过程。区别在于这个过程发生在分片内部，这样就避免了多次分步请求的网络负载。通过减少检索和重建索引步骤之间的时间，我们也减少了其他进程的改变带来冲突的可能性。
 
- `update` 请求最简单的一种形式是接收一个部分的文档作为 `doc` 的参数，它只是获取与现有文档的合并：将对象合并到一起，覆盖现有的字段，增加新的字段。例如，我们增加字段 `tags` `views` 到我们的博客文章，如下所示：
+ `update` 请求最简单的一种形式是接收一个部分的文档作为 `doc` 的参数，该请求仅与现有的文档进行合并：将对象合并到一起，覆盖现有的字段，增加新的字段。例如，我们增加字段 `tags` `views` 到我们的博客文章，如下所示：
 
 [source,js]
 --------------------------------------------------
@@ -51,11 +51,11 @@ POST /website/blog/1/_update
 --------------------------------------------------
 // SENSE: 030_Data/45_Partial_update.json
 
-<1> 新字段添加到 `_source` 。
+<1> 新的字段已被添加到 `_source` 中。
 
 ==== 使用脚本进行更新部分文档
 
-脚本可以在 `update` API中用来改变 `_source` 的内容字段，它((("_source field", sortas="source field")))被称为内部的更新脚本如 `ctx._source` 。 例如，我们可以使用脚本来增加博客文章已经有的 `views` 数量：
+脚本可以在 `update` API中用来改变 `_source` 的字段内容，它((("_source field", sortas="source field")))它在更新脚本中称为 `ctx._source` 。 例如，我们可以使用脚本来增加博客文章中 `views` 的数量：
 
 [source,js]
 --------------------------------------------------
@@ -69,9 +69,9 @@ POST /website/blog/1/_update
 .Scripting with Groovy
 ****
 
-对于那些 ((("documents", "partial updates", "using scripts")))((("updating documents", "partial updates", "using scripts"))) API 不能满足需求的情况，Elasticsearch 允许你使用脚本编写自定义的逻辑。((("scripts", "using to make partial updates")))许多的API中都支持脚本的使用，包括搜索、排序、聚合和文档更新。脚本可以作为请求的一部分被传递和从特殊.scripts索引中被检索，或者从磁盘加载。
+对于那些 ((("documents", "partial updates", "using scripts")))((("updating documents", "partial updates", "using scripts"))) API 不能满足需求的情况，Elasticsearch 允许你使用脚本编写自定义的逻辑。((("scripts", "using to make partial updates")))许多API都支持脚本的使用，包括搜索、排序、聚合和文档更新。脚本可以作为请求的一部分被传递，或者从特殊.scripts索引中检索，或者从磁盘加载。
 
-默认脚本语言 ((("Groovy")))http://groovy.codehaus.org/[Groovy]，是一个速度很快且非常有表现力的脚本语言，在语法上与 JavaScript 相似。它在 Elasticsearch V1.3.0 版本首次引入，运行在沙箱中，但是在 Groovy 脚本引擎中有漏洞存在，它允许攻击者构建逃脱沙箱的 Groovy 脚本并作为用户执行 shell 命令运行 Elasticsearch Java 虚拟机。
+默认脚本语言 ((("Groovy")))http://groovy.codehaus.org/[Groovy]，是一个速度很快且非常有表现力的脚本语言，在语法上与 JavaScript 相似。它在 Elasticsearch V1.3.0 版本首次引入，运行在沙箱中，然而，Groovy脚本引擎中存在漏洞，允许攻击者构建Groovy脚本，以便用户在运行Elasticsearch Java VM时逃脱沙箱并执行shell命令。
 
 因此，在版本 v1.3.8，1.4.3和版本 V1.5.0，以及以上的版本，它已经被默认禁用。另外，您可以通过设置集群中的所有节点的 `config/elasticsearch.yml` 文件来禁用动态 Groovy 脚本：
 
@@ -82,7 +82,7 @@ script.groovy.sandbox.enabled: false
 
 这将关闭 Groovy 沙箱，从而防止动态 Groovy 脚本作为请求的一部分被接受，或者从特殊的 `.scripts` 索引中被检索。当然，你仍然可以使用存储在每个节点的 `config/scripts/` 目录下的 Groovy 脚本。
 
-如果你的架构和安全性不需要担心漏洞攻击，例如你的 Elasticsearch 端点仅暴露给并且只有可信赖的应用可获得，并且需要脚本实现功能你就可以选择重新启用动态脚本。
+如果你的架构和安全性不需要担心漏洞攻击，例如你的 Elasticsearch 端点仅暴露和提供给可信赖的应用，并且需要脚本实现功能你就可以选择重新启用动态脚本。
 
 你可以在 {ref}/modules-scripting.html[scripting reference documentation]获得更多关于脚本的信息.
 
@@ -121,10 +121,10 @@ POST /website/blog/1/_update
    }
 }
 --------------------------------------------------
-<1> 该 `search` 标签已追加到 `tags` 数组。
-<2> 该 `views` 字段已被递增。
+<1> 该 `search` 标签已追加到 `tags` 数组中。
+<2> 该 `views` 字段已递增。
 
-我们甚至可以选择基于它的内容删除文档，通过设置 `ctx.op` 为 `delete` ：
+我们甚至可以选择通过设置 `ctx.op` 为 `delete` 来删除基于其内容的文档：
 
 [source,js]
 --------------------------------------------------
@@ -157,11 +157,11 @@ POST /website/pageviews/1/_update
 // SENSE: 030_Data/45_Upsert.json
 
 
-我们第一次运行这个请求， `upsert` 值作为新文档建立索引，初始化 `views` 字段为 `1` 。在随后的运行中，该文档已经存在，所以 `script` 应用更新，递增 `views` 计数器。
+我们第一次运行这个请求时， `upsert` 值作为新文档建立索引，初始化 `views` 字段为 `1` 。在随后的运行中，该文档已经存在，因此应用 `script` 更新，递增 `views` 计数器。
 
 ==== 更新和冲突
 
-在前面介绍这一部分时，我们说((("updating documents", "conflicts and")))((("conflicts", "updates and"))) 检索和重建索引的间隔越小，更改冲突的机会越小。但是它并不能完全消除冲突的可能性。 因为在执行检索之后 `update` 重建索引前，来自另外一个进程更改这个文档的请求很可能就会发生。
+在前面介绍这一部分时，我们说((("updating documents", "conflicts and")))((("conflicts", "updates and"))) 检索和重建索引的间隔越小，更改冲突的机会越小。但是它并不能完全消除冲突的可能性。 仍然可能的是，来自另一进程的请求可以在 `update`  重新索引之前改变文档。
 
 为了避免数据丢失，`update` API 在检索的步骤检索文档当前的 `_version` 版本号，并传递该版本号到重建索引步骤的 `index` 请求。如果另一个进程改变了处于检索和重新索引步骤之间的文档，那么 `_version` 版本号将不匹配，更新请求将会失败。
 
@@ -180,6 +180,6 @@ POST /website/pageviews/1/_update?retry_on_conflict=5 <1>
 }
 --------------------------------------------------
 // SENSE: 030_Data/45_Upsert.json
-<1> 失败之前重试该更新5次.
+<1> 失败之前重试该更新5次。
 
-这非常适用于很多操作比如递增计数器，递增的顺序是不太重要的，但是在其他情况下更改的顺序是非常重要的。像<<index-doc,`index` API>>，该`update` API 默认情况下采用最后一次更新生效的方法，但它也接受 `version` 参数，允许你使用<<optimistic-concurrency-control,optimistic concurrency control>> 指定打算更新的文档的版本。
+这非常适用于很多操作比如递增计数器，递增的顺序是不太重要的，但是在其他情况下更改的顺序是非常重要的。像 <<index-doc,`index` API>> ，该 `update` API 默认情况下采用最后一次更新生效的方法，但它也接受 `version` 参数，允许你使用 <<optimistic-concurrency-control,optimistic concurrency control>> 指定打算更新的文档的版本。

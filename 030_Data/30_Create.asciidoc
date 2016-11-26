@@ -3,7 +3,7 @@
 
 当我们索引一个文档，((("documents", "creating")))怎么确认我们正在创建一个完全新的文档，而不是覆盖现有的呢？
 
-请记住， `_index` ， `_type` ，和 `_id` 可以唯一标识一个文档，所以，为了确保创建一个完全新的文档的最简单的办法是，通过使用索引请求的`POST`版本让 Elasticsearch 自动生成新的唯一 `_id` ，((("POST method")))((("HTTP methods", "POST"))):
+请记住， `_index` ， `_type` ，和 `_id` 可以唯一标识一个文档，所以，为了确保创建一个完全新的文档的最简单的办法是，通过使用索引请求的`POST`版本让 Elasticsearch 自动生成新的唯一 `_id` ((("POST method")))((("HTTP methods", "POST"))):
 
 [source,js]
 --------------------------------------------------
@@ -11,9 +11,9 @@ POST /website/blog/
 { ... }
 --------------------------------------------------
 
-然而，如果已经有了想要的 `_id` , 那么我们一定要告诉 Elasticsearch ：如果相同的 `_index` ， `_type` 和 `_id` 尚不存在，那么使用索引请求中的 id 创建文档。有两种方式可以这样做，他们做的实际是相同的事情，取决于你觉得哪种方法更方便。
+然而，如果已经有了想要的 `_id` , 那么我们必须告诉 Elasticsearch ：只有仅当相同的 `_index` ， `_type` 和 `_id` 不存在时才接受我们的索引请求。有两种方式可以这样做，他们做的实际是相同的事情，取决于你觉得哪种方法更方便。
 
-第一种方法使用 `op_type` 查询((("PUT method")))((("HTTP methods", "PUT")))((("query strings", "op_type parameter")))((("op_type query string parameter")))-使用字符串作为参数：
+第一种方法使用 `op_type` 查询((("PUT method")))((("HTTP methods", "PUT")))((("query strings", "op_type parameter")))((("op_type query string parameter")))-字符串参数：
 
 [source,js]
 --------------------------------------------------
@@ -29,9 +29,9 @@ PUT /website/blog/123/_create
 { ... }
 --------------------------------------------------
 
-如果创建新文档的请求成功执行，Elasticsearch 会返回元数据和一个 `201 Created` 的 HTTP 响应代码。
+如果创建新文档的请求成功执行，Elasticsearch 会返回元数据和一个 `201 Created` 的 HTTP 响应码。
 
-另一方面，如果((("Document Already Exists Exception")))具有相同的 `_index` ， `_type` 和 `_id` 的文档已经存在，Elasticsearch 将会返回 `409 Conflict` 响应，以及像下面这样的错误信息：
+另一方面，如果((("Document Already Exists Exception")))具有相同的 `_index` ， `_type` 和 `_id` 的文档已经存在，Elasticsearch 将会返回 `409 Conflict` 响应码，以及像下面这样的错误信息：
 
 [source,js]
 --------------------------------------------------
